@@ -4,8 +4,6 @@ defmodule TasktrackerWeb.PageController do
   alias Tasktracker.TaskHandler.Task
   alias Tasktracker.Accounts
 
-
-
   def index(conn, _params) do
    user_id = get_session(conn, :user_id)
    IO.inspect(user_id)

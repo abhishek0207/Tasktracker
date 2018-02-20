@@ -3,6 +3,7 @@ defmodule TasktrackerWeb.SessionController do
   use TasktrackerWeb, :controller
   alias Tasktracker.Accounts
   alias Tasktracker.Accounts.User
+  
 
   def create(conn, %{"email" => email}) do
     user = Accounts.get_user_by_email(email)

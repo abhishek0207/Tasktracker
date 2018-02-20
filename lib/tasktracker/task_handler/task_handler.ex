@@ -37,6 +37,9 @@ defmodule Tasktracker.TaskHandler do
   """
   def get_task!(id), do: Repo.get!(Task, id)|>Repo.preload(:creator) |> Repo.preload(:assigner)
 
+  #created a non bang function -- Abhishek Ahuja
+  def get_task(id), do: Repo.get(Task, id)|>Repo.preload(:creator) |> Repo.preload(:assigner)
+
   def created_by(id) do
     Task |> Ecto.Query.where(assignedTo_id: ^id)|>Repo.all|>Repo.preload(:creator) |> Repo.preload(:assigner)
     # Repo.all(
@@ -47,7 +50,7 @@ defmodule Tasktracker.TaskHandler do
    end
 
    def getSelectData() do
-    Repo.all(from(u in "users", select: {u.name, u.id}))
+    Repo.all(from(u in "users", select: {u.email, u.id}))
     end
 
   @doc """

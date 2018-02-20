@@ -1,33 +1,24 @@
 defmodule TasktrackerWeb.TaskController do
   use TasktrackerWeb, :controller
 
+
   alias Tasktracker.TaskHandler
   alias Tasktracker.TaskHandler.Task
 
-  plug :get_current_user
-  plug :get_user_for_dropdown
-
-def get_current_user(conn, _params) do
-  # TODO: Move this function out of the router module.
-  user_id = get_session(conn, :user_id)
-  IO.inspect(conn)
-  user = Tasktracker.Accounts.get_user(user_id || -1)
-    assign(conn, :current_user, user)
-
-end
-
-def get_user_for_dropdown(conn,  _params) do
-  user = Tasktracker.TaskHandler.getSelectData()
-    assign(conn, :assigners, user)
-end
 
   def index(conn, _params) do
     user_id = get_session(conn, :user_id)
+    if(user_id) do
     user = Tasktracker.Accounts.get_user(user_id || -1)
     IO.puts("user is #{user.id}")
     taskPerId = TaskHandler.created_by(user.id)
     tasks = TaskHandler.list_tasks()
     render(conn, "index.html", tasks: tasks, taskPerId: taskPerId)
+  else
+    conn
+    |> put_flash(:error, "Cannot view Tasks, Please login first")
+    |> redirect(to: page_path(conn, :index))
+  end
   end
 
   def new(conn, _params) do
@@ -38,12 +29,14 @@ end
     render(conn, "new.html", changeset: changeset)
   else
     conn
-    |> put_flash(:info, "Cannot create Tasks, Please login first")
+    |> put_flash(:error, "Cannot create Tasks, Please login first")
     |> redirect(to: page_path(conn, :index))
   end
   end
 
   def create(conn, %{"task" => task_params}) do
+    user_id = get_session(conn, :user_id)
+    if(user_id) do
       assigners = TaskHandler.getSelectData()
       case TaskHandler.create_task(task_params) do
         {:ok, task} ->
@@ -54,12 +47,30 @@ end
           IO.inspect(changeset)
           render(conn, "new.html", changeset: changeset)
       end
-
+    else
+      conn
+      |> put_flash(:error, "Cannot create Tasks, Please login first")
+      |> redirect(to: page_path(conn, :index))
+end
   end
 
   def show(conn, %{"id" => id}) do
-    task = TaskHandler.get_task!(id)
-    render(conn, "show.html", task: task)
+    user_id = get_session(conn, :user_id)
+    if(user_id) do
+    task = TaskHandler.get_task(id)
+    if(task) do
+      render(conn, "show.html", task: task)
+    else
+      conn
+      |> put_flash(:error, "Task does not exist")
+      |> redirect(to: task_path(conn, :index))
+    end
+
+  else
+    conn
+    |> put_flash(:error, "Cannot view a task, Please login first")
+    |> redirect(to: page_path(conn, :index))
+  end
   end
 
 
