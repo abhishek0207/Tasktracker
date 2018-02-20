@@ -1,0 +1,21 @@
+<div class="jumbotron">
+  <center>
+<h1> <%= @current_user.name %>'s Dashboard <h1></center>
+  <div class="row">
+    <div class="col-sm-6">
+      <p class="lead">
+      <strong> Total tasks in the system </strong>
+         <%= @tasks %> <br />
+          <strong> Total number of users in the system </strong>
+           <%= @users %><br />
+        <strong> Tasks pending your action </strong>
+             <%= @assigned %>
+          </p>
+  </div>
+
+  <div class="col-sm-6">
+    <span><%= link "Open New Task", to: task_path(@conn, :new), class: "btn btn-default" %></span>
+    <span><%= link "View Tasks", to: task_path(@conn, :index), class: "btn btn-default" %></span>
+  </div>
+
+</div>

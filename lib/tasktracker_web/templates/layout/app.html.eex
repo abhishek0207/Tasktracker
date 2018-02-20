@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>Hello Tasktracker!</title>
+    <link rel="stylesheet" href="<%= static_path(@conn, "/css/app.css") %>">
+  </head>
+
+  <body>
+    <div class="container"> <!--navbar code snippet from https://getbootstrap.com/docs/4.0/components/navbar/ -->
+      <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <%= if @current_user do %>
+        <a class="navbar-brand" href="/dashboard">Tasktracker</a>
+        <% else %>
+        <a class="navbar-brand" href="/">Tasktracker</a>
+        <% end %>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+         <%= if @current_user do %>
+        <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+          <div class="navbar-nav">
+            <a class="nav-item nav-link active" href="/tasks">Tasks </a>
+            <a class="nav-item nav-link" href="/users">Users</a>
+          </div>
+        </div>
+        <% end %>
+      </nav>
+      <div class="row">
+       <div class="col-3 offset-9">
+         <%= if @current_user do %>
+           <p>
+            Hi: <%= @current_user.name %> |
+             <%= link "Log Out", to: "/session", method: :delete %>
+           </p>
+         <% else %>
+           <p>Login or Register.</p>
+         <% end %>
+       </div>
+     </div>
+     <%= if(get_flash(@conn, :info)) do %>
+      <p class="alert alert-info" role="alert"><%= get_flash(@conn, :info) %></p>
+      <% end %>
+      <%= if(get_flash(@conn, :error)) do %>
+      <p class="alert alert-danger" role="alert"><%= get_flash(@conn, :error) %></p>
+      <% end %>
+      <main role="main">
+        <%= render @view_module, @view_template, assigns %>
+      </main>
+
+    </div> <!-- /container -->
+    <script src="<%= static_path(@conn, "/js/app.js") %>"></script>
+  </body>
+</html>

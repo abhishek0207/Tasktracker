@@ -1,0 +1,29 @@
+<div class="card">
+  <div class="card-header">
+    <%= @task.title %>
+  </div>
+  <div class="card-body">
+    <h5 class="card-title">opened by : <%= @task.creator.name %></h5>
+    <p class="card-text"><%= @task.body %></p>
+    <p class="card-text">Time Spent in mins : <%= @task.time_taken %></p>
+    <span class="btn"><%=if (@task.status == false ) do
+     link "Mark as Complete", to: task_path(@conn, :edit, @task)
+    else
+    link "Mark as not Complete", to: task_path(@conn, :edit, @task)
+    end
+
+
+%></span>
+<span><%= link "Update Task", to: task_path(@conn, :edit, @task), class: "btn btn-default btn-xs" %></span>
+<span><%= link "Back", to: task_path(@conn, :index) %></span>
+<%= form_tag("/updateTaskTime", method: :post) do %>
+<div class="form-group">
+  <input type="number" name="time_taken" step ="15" min = "0" required/>
+  <input type="hidden" name="task_id" value = <%= @task.id %>  />  </div>
+  <!-- passwords come later -->
+  <div class="form-group">
+    <button class="btn btn-primary">Update Task Time</button>
+  </div>
+<% end %>
+  </div>
+</div>
