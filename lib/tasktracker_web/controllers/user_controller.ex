@@ -5,27 +5,13 @@ defmodule TasktrackerWeb.UserController do
   alias Tasktracker.Accounts.User
 
   def index(conn, _params) do
-    user_id = get_session(conn, :user_id)
-    if (user_id) do
     users = Accounts.list_users()
     render(conn, "index.html", users: users)
-  else
-    conn
-    |> put_flash(:error, "you need to be logged in to view the users.")
-    |> redirect(to: page_path(conn, :index))
-  end
   end
 
   def new(conn, _params) do
-    user_id = get_session(conn, :user_id)
-    if (user_id) do
     changeset = Accounts.change_user(%User{})
     render(conn, "new.html", changeset: changeset)
-  else
-    conn
-    |> put_flash(:error, "you need to be logged in to create users.")
-    |> redirect(to: page_path(conn, :index))
-  end
   end
 
   def create(conn, %{"user" => user_params}) do
@@ -48,8 +34,6 @@ defmodule TasktrackerWeb.UserController do
   end
 
   def show(conn, %{"id" => id}) do
-    user_id = get_session(conn, :user_id)
-    if (user_id) do
     user = Accounts.get_user(id)
     if(user) do
       render(conn, "show.html", user: user)
@@ -58,11 +42,6 @@ defmodule TasktrackerWeb.UserController do
       |> put_flash(:error, "user does not exist.")
       |> redirect(to: user_path(conn, :index))
     end
-  else
-    conn
-    |> put_flash(:error, "you need to be logged in to view the users.")
-    |> redirect(to: page_path(conn, :index))
-  end
   end
 
   def edit(conn, %{"id" => id}) do
