@@ -1,0 +1,32 @@
+<h2>Your Reportees</h2>
+
+<table class="table">
+  <thead>
+    <tr>
+
+      <th>Employee Id</th>
+      <th>Employee Name</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+<%= for reportee <- @reportees do %>
+    <tr>
+      <td>
+        <%= reportee.reportee.id %>
+      </td>
+      <td>
+          <%= reportee.reportee.name %>
+      </td>
+
+      <td class="text-right">
+        <span><%= link "Show", to: reportee_path(@conn, :show, reportee), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Edit", to: reportee_path(@conn, :edit, reportee), class: "btn btn-default btn-xs" %></span>
+        <span><%= link "Delete", to: reportee_path(@conn, :delete, reportee), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
+      </td>
+    </tr>
+<% end %>
+  </tbody>
+</table>
+
+<span><%= link "New Reportee", to: reportee_path(@conn, :new) %></span>

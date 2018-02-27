@@ -12,8 +12,18 @@ defmodule TasktrackerWeb.TaskController do
     user = Tasktracker.Accounts.get_user(user_id || -1)
     IO.puts("user is #{user.id}")
     taskPerId = TaskHandler.created_by(user.id)
+    assigned_task = TaskHandler.assigned_tasks(user.id)
+    timeblockdata=TaskHandler.gettimeMap(user.id)
+    IO.puts("time block map is")
+    IO.inspect(timeblockdata)
+    task_time_info = Enum.map(timeblockdata, fn(x) -> TaskHandler.eachTaskEndTime(x) end)
+    task_time_info = List.flatten(task_time_info)
+    task_time_info = Enum.reduce(task_time_info, %{}, fn(x, values) ->
+    Map.put(values, x["task_id"], x["id"])
+    end)
+    IO.inspect(task_time_info)
     tasks = TaskHandler.list_tasks()
-    render(conn, "index.html", tasks: tasks, taskPerId: taskPerId)
+    render(conn, "index.html", tasks: tasks, taskPerId: taskPerId, tasktime: task_time_info)
   else
     conn
     |> put_flash(:error, "Cannot view Tasks, Please login first")
@@ -56,10 +66,12 @@ end
 
   def show(conn, %{"id" => id}) do
     user_id = get_session(conn, :user_id)
+    timeblocks = TaskHandler.getTaskTimeblocks(id)
+    IO.inspect(timeblocks)
     if(user_id) do
     task = TaskHandler.get_task(id)
     if(task) do
-      render(conn, "show.html", task: task)
+      render(conn, "show.html", task: task, timeblocks: timeblocks)
     else
       conn
       |> put_flash(:error, "Task does not exist")
@@ -125,5 +137,24 @@ end
 
   end
 
+  def generateTaskReport(conn, _params) do
+    current_user = conn.assigns[:current_user]
+    if(current_user) do
+    managercheck = Tasktracker.Accounts.is_manager(current_user.id)
+    if (managercheck) do
+    assigned_task = TaskHandler.assigned_tasks(current_user.id)
+    IO.inspect(assigned_task)
+    render(conn, "taskReport.html", assigned_task: assigned_task)
+  else
+    conn
+    |>put_flash(:error, "permission denied")
+    |>redirect(to: page_path(conn, :index))
+  end
+  else
+    conn
+    |> put_flash(:error, "Cannot view Tasks, Please login first")
+    |> redirect(to: page_path(conn, :index))
+  end
+  end
 
 end

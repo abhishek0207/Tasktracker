@@ -1,11 +1,13 @@
 <h2>Listing Users</h2>
-
+<% current_user_value = Tasktracker.Accounts.is_manager(@current_user.id) %>
 <table class="table table-hover table-bordered">
   <thead class="thead-light">
     <tr>
       <th>Email</th>
       <th>Name</th>
+  <%= if (current_user_value == true) do %>
       <th></th>
+      <% end %>
     </tr>
   </thead>
   <tbody>
@@ -14,11 +16,13 @@
       <td><%= user.email %></td>
       <td><%= user.name %></td>
 
+  <%= if (current_user_value == true) do %>
       <td class="text-right">
         <span><%= link "Show", to: user_path(@conn, :show, user), class: "btn btn-default btn-xs" %></span>
         <span><%= link "Edit", to: user_path(@conn, :edit, user), class: "btn btn-default btn-xs" %></span>
         <span><%= link "Delete", to: user_path(@conn, :delete, user), method: :delete, data: [confirm: "Are you sure?"], class: "btn btn-danger btn-xs" %></span>
       </td>
+      <% end %>
     </tr>
 <% end %>
   </tbody>

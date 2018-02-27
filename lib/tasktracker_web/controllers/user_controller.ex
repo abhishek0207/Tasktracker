@@ -6,7 +6,14 @@ defmodule TasktrackerWeb.UserController do
 
   def index(conn, _params) do
     users = Accounts.list_users()
+    current_user = conn.assigns[:current_user]
+    if(current_user) do
     render(conn, "index.html", users: users)
+  else
+    conn
+    |> put_flash(:error, "Permission Denied, please login")
+    |> redirect(to: page_path(conn, :index))
+  end
   end
 
   def new(conn, _params) do
@@ -35,8 +42,26 @@ defmodule TasktrackerWeb.UserController do
 
   def show(conn, %{"id" => id}) do
     user = Accounts.get_user(id)
+    {id , ""} = Integer.parse(id)
+    manager = Tasktracker.Reports.get_user_manager(id)
+    #{manager, ""} = Integer.parse(manager)
+    if(manager) do
+      manager_struct = Accounts.get_user(manager)
+      manager_name = manager_struct.name
+    else
+      manager_name = ""
+    end
     if(user) do
-      render(conn, "show.html", user: user)
+      if(user.manager_field == true) do
+        reportee_struct = Tasktracker.Reports.get_reportees(id)
+        if(reportee_struct) do
+        reportee_with_names = Enum.map(reportee_struct, fn(x) -> Accounts.get_user(x) end)
+        IO.inspect(reportee_with_names)
+      else
+        reportee_with_names = []
+      end
+      end
+      render(conn, "show.html", user: user, manager_name: manager_name, reportees: reportee_with_names)
     else
       conn
       |> put_flash(:error, "user does not exist.")

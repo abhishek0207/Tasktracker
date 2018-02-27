@@ -21,14 +21,21 @@ defmodule TasktrackerWeb.Router do
     get "/", PageController, :index
     get "/dashboard", PageController, :dashboard
     post "/updateTaskTime", TaskController, :updateTime
+    post "/addReportees", ReporteeController, :addReportees
+    get "/myResources", ReporteeController, :get_reportees
+    get "/taskReport", TaskController, :generateTaskReport
     resources "/users", UserController
     resources "/tasks", TaskController
+    resources "/reportees", ReporteeController
     post "/session", SessionController, :create
     delete "/session", SessionController, :delete
+
+
   end
 
   # Other scopes may use custom stacks.
-  # scope "/api", TasktrackerWeb do
-  #   pipe_through :api
-  # end
+  scope "/api/v1", TasktrackerWeb do
+     pipe_through :api
+       resources "/timeblocks", TimeblockController, except: [:new, :edit]
+   end
 end

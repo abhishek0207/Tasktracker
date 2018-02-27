@@ -11,6 +11,44 @@
     <strong>Name:</strong>
     <%= @user.name %>
   </li>
+  <%=if @manager_name =="" do %>
+    <li><strong>You have not been assigned with a manager yet</strong> </li>
+  <% else %>
+  <li><strong>Your Manager is </strong>
+  <%= @manager_name %></li>
+  <% end %>
+    <strong>User Type:</strong>
+    <%= if @user.manager_field == true do %>
+    <strong>Manager</strong> <br /> <br />
+    <div class="row">
+      <div class="col-sm-6">
+    <h6>Add your Reportees(Please enter their Employee id) </h6>
+    <%= form_tag("/addReportees", method: :post) do %>
+    <div class="form-group">
+      <input type="number" name="user_id" required/>
+      <input type="hidden" name="manager_id" value = <%= @user.id %>  />  </div>
+      <!-- passwords come later -->
+      <div class="form-group">
+        <button class="btn btn-primary">Add Reportee</button>
+      </div>
+    <% end %>
+  </div>
+  <div class="col-sm-6">
+<h4> Your immediate reportees </h4>
+<ul>
+<%= for user <- @reportees do %>
+  <li>
+    <%= user.name %>
+  </li>
+<% end %>
+<ul>
+  </div>
+      </div>
+    <% else %>
+    <strong>Employee</strong>
+    <% end %>
+
+  </li>
 
 </ul>
 

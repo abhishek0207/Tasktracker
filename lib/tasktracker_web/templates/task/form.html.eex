@@ -34,11 +34,6 @@
     <%= select f, :assignedTo_id, @assigners, class: "form-control" %>
     <%= error_tag f, :assignedTo_id%>
   </div>
-    <div class="form-group">
-      <%= label f, :time_taken, class: "control-label" %>
-      <%= number_input f, :time_taken, class: "form-control", step: "15", min: "0"%>
-      <%= error_tag f, :time_taken %>
-    </div>
   <div class="form-group">
     <%= submit "Submit", class: "btn btn-primary" %>
   </div>

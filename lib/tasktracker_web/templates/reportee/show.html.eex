@@ -1,0 +1,14 @@
+<h2>Show Reportee</h2>
+
+<ul>
+
+  <li>
+Manager : <%= @reportee.manager.name %>  </li>
+<li>
+Employee : <%= @reportee.reportee.name%> </li>
+
+
+</ul>
+
+<span><%= link "Edit", to: reportee_path(@conn, :edit, @reportee) %></span>
+<span><%= link "Back", to: reportee_path(@conn, :index) %></span>

@@ -1,0 +1,21 @@
+<%= form_for @changeset, @action, fn f -> %>
+  <%= if @changeset.action do %>
+    <div class="alert alert-danger">
+      <p>Oops, something went wrong! Please check the errors below.</p>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <div class="form-group">
+      <%= label f, "Reportee for " <> String.capitalize(@current_user.name), class: "control-label" %>
+      <%= hidden_input f, :manager_id, class: "form-control", value: @current_user.id %>
+      <%= error_tag f, :manager_id %>
+    </div>
+    <div class="form-group">
+      <%= label f, "Employee id", class: "control-label" %>
+      <%= text_input f, :repotee_id, class: "form-control" %>
+      <%= error_tag f, :repotee_id %>
+    </div>
+    <%= submit "Submit", class: "btn btn-primary" %>
+  </div>
+<% end %>

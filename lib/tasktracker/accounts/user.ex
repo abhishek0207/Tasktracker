@@ -7,7 +7,9 @@ defmodule Tasktracker.Accounts.User do
   schema "users" do
     field :email, :string
     field :name, :string
-
+    field :manager_field, :boolean
+    has_many :reportees_follows, Tasktracker.Reports.Reportee, foreign_key: :repotee_id
+    has_many :reportees, through: [:reportees_follows, :reportee]
     timestamps()
   end
 
@@ -15,7 +17,7 @@ defmodule Tasktracker.Accounts.User do
   def changeset(%User{} = user, attrs) do
 
     user
-    |> cast(attrs, [:email, :name])
+    |> cast(attrs, [:email, :name, :manager_field])
     |> validate_required([:email, :name])
     |> validate_format(:email,~r/@/)
     |> unique_constraint(:email)

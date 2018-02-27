@@ -111,4 +111,7 @@ defmodule Tasktracker.Accounts do
   def count_users() do
     Repo.one(from p in "users", select: count(p.id))
   end
+  def is_manager(id) do
+    Repo.one(from p in "users", where: p.id == ^id ,select: p.manager_field)
+  end
 end

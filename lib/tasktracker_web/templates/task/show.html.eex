@@ -1,3 +1,7 @@
+<script>
+window.timeBlockPath = "<%= timeblock_path(@conn, :index) %>";
+</script>
+
 <div class="card">
   <div class="card-header">
     <%= @task.title %>
@@ -5,7 +9,6 @@
   <div class="card-body">
     <h5 class="card-title">opened by : <%= @task.creator.name %></h5>
     <p class="card-text"><%= @task.body %></p>
-    <p class="card-text">Time Spent in mins : <%= @task.time_taken %></p>
     <span class="btn"><%=if (@task.status == false ) do
      link "Mark as Complete", to: task_path(@conn, :edit, @task)
     else
@@ -16,14 +19,117 @@
 %></span>
 <span><%= link "Update Task", to: task_path(@conn, :edit, @task), class: "btn btn-default btn-xs" %></span>
 <span><%= link "Back", to: task_path(@conn, :index) %></span>
-<%= form_tag("/updateTaskTime", method: :post) do %>
+<!--<%= form_tag("/updateTaskTime", method: :post) do %>
 <div class="form-group">
   <input type="number" name="time_taken" step ="15" min = "0" required/>
   <input type="hidden" name="task_id" value = <%= @task.id %>  />  </div>
-  <!-- passwords come later -->
+ passwords come later
   <div class="form-group">
     <button class="btn btn-primary">Update Task Time</button>
   </div>
 <% end %>
-  </div>
+</div> -->
+<div class="row">
+  <div class="col-sm-6">
+<p><h5> Add a Time block below </h5><p>
+<%= form_for @conn, timeblock_path(@conn, :create), [as: :timeblock], fn f->  %>
+
+<div class="form-group">
+
+  <%= label f, "Start Time", class: "control-label" %>
+  <%= datetime_select f, :start_time, class: "form-control" %>
+  <%= error_tag f, :start_time%>
+</div>
+
+<div class="form-group">
+  <%= label f, "End Time", class: "control-label" %>
+  <%= datetime_select f, :end_time, class: "form-control" %>
+  <%= error_tag f, :end_time%>
+</div>
+<div class="form-group">
+  <%= hidden_input f, :user_id, value: @current_user.id, class: "form-control" %>
+  <%= error_tag f, :user_id %>
+</div>
+<div class="form-group">
+  <%= hidden_input f, :task_id, value: @task.id, class: "form-control" %>
+  <%= error_tag f, :task_id %>
+</div>
+<div class="form-group">
+  <%= submit "Submit", class: "btn btn-primary" %>
+</div>
+<% end %>
+</form>
+</div>
+</div>
+<div class="col-sm-6">
+  <div id="form-container" style="display:none">
+    <h3>Edit Timeblock Below</h3>
+<form id ="edit_timeblock_form" >
+
+ <div class="form-group">
+   <label> Start Time </label>
+<%= datetime_select :editTimeblock, "start_time", value: DateTime.utc_now(), class: "form-control" %> <br />
+</div>
+
+<div class="form-group">
+ <label> End Time </label>
+<%= datetime_select :editTimeblock, "end_time", value: DateTime.utc_now(),  class: "form-control" %><br />
+</div>
+<input type="hidden" id="editRecordid" value="0" /><br />
+<input type="hidden" id="editTaskid" value = "<%= @task.id %>" />
+<input type="hidden" id="edituserid" value = "<%= @current_user.id %>" />
+<input type="button" id = "edit_form_button"  value="Update" class="btn btn-primary"/>
+<input type="button" id = "cancel_form_button"  value="cancel" class="btn btn-danger"/>
+</form>
+</div>
+</div>
+</div>
+
+<div class="timeblocks">
+  <h2>Your Work History</h2>
+  <table class="table table-hover table-bordered">
+    <thead class="thead-light">
+      <tr>
+        <th>Start Time</th>
+        <th>End time</th>
+        <th>Time spent </th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody>
+      <% total = 0 %>
+    <%= for time <- @timeblocks do %>
+        <tr>
+          <td><%= time["start_time"] %></td>
+          <td><%= if(is_nil(time["end_time"])) do %> ---in progress------
+          <% else %>
+          <%= time["end_time"] %></td>
+          <% end %>
+          <%= if not is_nil(time["end_time"]) do %>
+          <% variable = NaiveDateTime.diff(time["end_time"], time["start_time"]) %>
+          <% else %>
+          <% variable = NaiveDateTime.diff(NaiveDateTime.utc_now, time["start_time"]) %>
+                    <% end %>
+          <%= if (variable >=3600) do %>
+            <td><%= div(variable, 3600) %> Hours</td>
+            <% else %>
+            <%= if(variable >= 60) do %>
+              <td><%= div(variable, 60) %> Minutes </td>
+              <% else %>
+              <td> <%= variable %> Seconds </td>
+            <% end %>
+
+          <% end %>
+          <% start_time =  time["start_time"] %>
+          <% end_time = time["end_time"] %>
+          <% record_id = time["id"] %>
+         <td><button class="edit-btn btn btn-primary" data-record-id ="<%= record_id %>" data-start-time = "<%= start_time %> " data-end-time = "<%= end_time %>" >Edit</button>
+         <span><button class="delete-timeblock-btn btn btn-danger" data-record-id="<%= record_id %>">Delete</button>
+         </td>
+
+        </tr>
+    <% end %>
+    </tbody>
+  </table>
+
 </div>
